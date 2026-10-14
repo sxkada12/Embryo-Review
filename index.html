@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USMLE Step 1: Medical Embryology Board Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .vignette-font {
+      font-family: 'Merriweather', serif;
+      line-height: 1.75;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <span class="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded tracking-wider uppercase">USMLE Prep</span>
+        <h1 class="text-base sm:text-lg font-semibold tracking-tight text-slate-100 flex items-center gap-2">
+          <span>Medical Embryology Board Exam</span>
+          <span class="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-normal hidden md:inline">30 Vignettes</span>
+        </h1>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div id="timer-display" class="font-mono text-sm sm:text-base bg-slate-800 text-amber-300 px-3 py-1 rounded border border-slate-700 flex items-center gap-2">
+          <i class="far fa-clock"></i> <span id="time-left">45:00</span>
+        </div>
+        <button id="end-exam-btn" class="text-xs sm:text-sm font-medium bg-red-600/90 hover:bg-red-600 text-white px-3 py-1.5 rounded transition shadow-sm">
+          Finish Test
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Question Panel -->
+    <section class="lg:col-span-8 flex flex-col space-y-5">
+      
+      <!-- Status Bar -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span id="current-q-pill" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">Question 1 of 30</span>
+          <span id="q-category" class="text-xs font-medium text-slate-500 uppercase tracking-wider">Cardiovascular System</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="bookmark-btn" title="Flag question for review" class="p-2 rounded hover:bg-slate-100 text-slate-400 hover:text-amber-500 transition">
+            <i class="far fa-flag text-base" id="bookmark-icon"></i>
+          </button>
+          <button id="strike-toggle-btn" title="Toggle strike-through mode" class="p-2 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition text-xs font-semibold px-2 border border-slate-200">
+            <i class="fas fa-strikethrough mr-1"></i> Strike Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- Vignette and Question Box -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 flex-1 flex flex-col justify-between">
+        <div>
+          <div id="vignette-text" class="vignette-font text-slate-800 text-base md:text-lg mb-6 leading-relaxed selection:bg-amber-100">
+            <!-- Vignette text -->
+          </div>
+
+          <div class="border-t border-slate-200 pt-5">
+            <h3 class="text-xs font-bold tracking-wider text-slate-400 uppercase mb-4">Select the single best answer</h3>
+            <div id="options-container" class="space-y-3">
+              <!-- Options -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Rationale Box -->
+        <div id="explanation-box" class="mt-8 border-t border-slate-200 pt-6 hidden">
+          <div class="p-4 rounded-lg bg-slate-50 border border-slate-200">
+            <div class="flex items-center justify-between mb-2">
+              <span id="result-badge" class="px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider"></span>
+              <span class="text-xs font-medium text-slate-400">High-Yield USMLE Board Rationale</span>
+            </div>
+            <div id="explanation-text" class="text-sm text-slate-700 leading-relaxed space-y-2">
+              <!-- Explanation -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="flex items-center justify-between bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+        <button id="prev-btn" class="px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed">
+          <i class="fas fa-chevron-left mr-1.5"></i> Previous
+        </button>
+        <button id="reveal-btn" class="px-4 py-2 text-sm font-medium text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition">
+          <i class="far fa-lightbulb mr-1.5"></i> Show Explanation
+        </button>
+        <button id="next-btn" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition">
+          Next <i class="fas fa-chevron-right ml-1.5"></i>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- Side Navigation / Score Grid -->
+    <aside class="lg:col-span-4 flex flex-col space-y-5">
+      
+      <!-- Progress Overview -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <h2 class="text-sm font-bold uppercase text-slate-500 tracking-wider mb-3">Exam Dashboard</h2>
+        <div class="grid grid-cols-2 gap-3 mb-4 text-center">
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+            <span class="block text-2xl font-bold text-slate-800" id="answered-count">0/30</span>
+            <span class="text-xs text-slate-400 uppercase font-semibold">Answered</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-100">
+            <span class="block text-2xl font-bold text-emerald-600" id="accuracy-display">--%</span>
+            <span class="text-xs text-slate-400 uppercase font-semibold">Accuracy</span>
+          </div>
+        </div>
+
+        <div class="w-full bg-slate-100 rounded-full h-2 mb-4">
+          <div id="progress-bar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 3.33%"></div>
+        </div>
+
+        <!-- Question Grid Indicator -->
+        <div class="flex items-center justify-between text-xs text-slate-500 mb-3 border-b border-slate-100 pb-2">
+          <span>Navigator</span>
+          <div class="flex gap-2">
+            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-blue-600 inline-block mr-1"></span> Current</span>
+            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-emerald-500 inline-block mr-1"></span> Correct</span>
+            <span class="flex items-center"><span class="w-2.5 h-2.5 rounded bg-rose-500 inline-block mr-1"></span> Incorrect</span>
+          </div>
+        </div>
+
+        <!-- 30-Question Grid -->
+        <div id="question-grid" class="grid grid-cols-6 gap-2 max-h-72 overflow-y-auto custom-scrollbar p-1">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-400">
+          <span><i class="far fa-flag text-amber-500 mr-1"></i> Flagged: <strong id="flagged-count" class="text-slate-700">0</strong></span>
+          <button id="reset-exam-btn" class="hover:text-red-600 underline transition">Reset Exam</button>
+        </div>
+      </div>
+
+      <!-- High-Yield Core Summary Notes -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
+          <i class="fas fa-stethoscope text-blue-600"></i> High-Yield Board Pearls
+        </h3>
+        <ul class="text-xs text-slate-600 space-y-2 leading-relaxed">
+          <li>• <strong>Kartagener Syndrome:</strong> Dynein arm defect stops leftward nodal fluid flow; causes reversed cardiac looping &amp; dextrocardia.</li>
+          <li>• <strong>Diaphragmatic Hernia:</strong> Failure of left pleuroperitoneal membrane; causes compressional pulmonary hypoplasia.</li>
+          <li>• <strong>Canalicular Phase (Wks 16-25):</strong> Gas exchange impossible prior to ~25 wks; Type II pneumocytes arise ~20 wks.</li>
+          <li>• <strong>Arch Arteries:</strong> 3rd arch = common carotids; 4th = aortic arch &amp; right subclavian; 6th = ductus arteriosus &amp; pulmonary arteries.</li>
+          <li>• <strong>Chiari II:</strong> Cerebellar vermis and medulla downward displacement through foramen magnum; strongly linked with myelomeningocele.</li>
+        </ul>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Summary Modal -->
+  <div id="score-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 transform transition-all text-center">
+      <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600 text-2xl">
+        <i class="fas fa-award"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-slate-800 mb-1">Board Assessment Completed!</h2>
+      <p class="text-sm text-slate-500 mb-6">Embryology Review: Cardiovascular, Pulmonary, Neural &amp; Craniofacial</p>
+
+      <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+          <span class="text-xs text-slate-400 font-semibold block uppercase">Total Score</span>
+          <span id="modal-score" class="text-2xl font-bold text-blue-600">0/30</span>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+          <span class="text-xs text-slate-400 font-semibold block uppercase">Percentage</span>
+          <span id="modal-pct" class="text-2xl font-bold text-slate-800">0%</span>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+          <span class="text-xs text-slate-400 font-semibold block uppercase">P/F Status</span>
+          <span id="modal-status" class="text-base font-bold mt-1 block">PASS</span>
+        </div>
+      </div>
+
+      <div id="modal-breakdown" class="text-left text-xs bg-slate-50 p-4 rounded-xl border border-slate-100 mb-6 space-y-1.5 text-slate-600">
+        <!-- Performance breakdown -->
+      </div>
+
+      <div class="flex gap-3">
+        <button id="modal-review-btn" class="flex-1 py-2.5 rounded-lg border border-slate-300 font-semibold text-sm text-slate-700 hover:bg-slate-100 transition">
+          Review Answers
+        </button>
+        <button id="modal-restart-btn" class="flex-1 py-2.5 rounded-lg bg-blue-600 font-semibold text-sm text-white hover:bg-blue-700 transition">
+          Retake Quiz
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+    Designed for Medical Student Board Review &copy; Embryology Core Curriculum
+  </footer>
+
+  <script>
+    // 30 Board-style Questions with balanced answer keys (A, B, C, D)
+    const questions = [
+      {
+        id: 1,
+        category: "Cardiovascular System",
+        question: "A 2-day-old newborn with respiratory distress is found to have an apex beat situated on the right side of the thorax. Subsequent imaging demonstrates situs inversus totalis. Genetic workup reveals absent outer dynein arms. Which of the following embryological mechanisms was primarily disrupted in this newborn?",
+        options: [
+          "Anterior migration of secondary heart field cells",
+          "Degeneration of the left common cardinal vein",
+          "Leftward fluid flow across the embryonic node",
+          "Septation of the primitive atrium by septum spurium"
+        ],
+        correct: 2, // C
+        explanation: "Normal left-right organ asymmetry depends on motile monocilia at the embryonic node that rotate to drive a leftward fluid flow (nodal flow model), activating left-sided calcium signaling and expression of morphogens (FGF8, Nodal, Lefty2, PITX2). Kartagener syndrome involves defective ciliary dynein arms causing random or reversed cardiac looping (dextrocardia)."
+      },
+      {
+        id: 2,
+        category: "Respiratory System",
+        question: "A male infant born at 38 weeks' gestation develops severe tachypnea, cyanosis, and a scaphoid abdomen shortly after birth. Auscultation reveals absent left breath sounds and active bowel sounds over the left hemithorax. A defect in which of the following embryological structures is responsible?",
+        options: [
+          "Septum transversum",
+          "Pleuroperitoneal membrane",
+          "Dorsal mesentery of the esophagus",
+          "Pleuropericardial fold"
+        ],
+        correct: 1, // B
+        explanation: "Congenital diaphragmatic hernia (most commonly posterolateral left-sided, Bochdalek) is caused by the failure of the pleuroperitoneal membrane/fold to close the pericardioperitoneal canal, allowing abdominal contents to herniate into the pleural cavity and compressing the left lung bud, producing pulmonary hypoplasia."
+      },
+      {
+        id: 3,
+        category: "Central Nervous System",
+        question: "A female infant is born with a fluid-filled sac protruding through a defect in the lumbar spine. Neurologic exam reveals absent lower extremity reflexes and bilateral clubfeet. The sac contains both meninges and neural tissue. Which of the following maternal laboratory findings would have been elevated prenatally?",
+        options: [
+          "Human chorionic gonadotropin and inhibin A",
+          "Unconjugated estriol and pregnancy-associated plasma protein A",
+          "Maternal serum calcium and calcitonin",
+          "Alpha-fetoprotein and acetylcholinesterase"
+        ],
+        correct: 3, // D
+        explanation: "Myelomeningocele is an open neural tube defect where both meninges and the spinal cord herniate through a defect resulting from failure of posterior neuropore closure. Open NTDs allow leakage of fetal CSF into amniotic fluid, causing elevated maternal serum alpha-fetoprotein (AFP) and elevated amniotic acetylcholinesterase (AChE)."
+      },
+      {
+        id: 4,
+        category: "Pharyngeal Apparatus",
+        question: "A 22-year-old male presents with a painless, slow-growing lateral neck mass located along the anterior border of the sternocleidomastoid muscle. The mass is fluctuant and periodically discharges mucoid fluid. This condition arises from failure of obliteration of which structure?",
+        options: [
+          "Second pharyngeal cleft",
+          "Thyroglossal duct",
+          "First pharyngeal pouch",
+          "Third pharyngeal pouch"
+        ],
+        correct: 0, // A
+        explanation: "A branchial (pharyngeal) cleft cyst arises on the lateral neck from failure of obliteration of the second pharyngeal cleft (cervical sinus remnant). By contrast, thyroglossal duct cysts occur in the anterior midline and elevate with swallowing or tongue protrusion."
+      },
+      {
+        id: 5,
+        category: "Cardiovascular System",
+        question: "A 3-week-old female infant is evaluated for a harsh holosystolic murmur heard best over the lower left sternal border. Echocardiography demonstrates a communication between the ventricles. The most common form of this congenital defect results from abnormal development of which embryologic tissue?",
+        options: [
+          "Muscular interventricular proliferation",
+          "Conotruncal endocardial cushions",
+          "Septum secundum",
+          "Right venous valve"
+        ],
+        correct: 1, // B
+        explanation: "Ventricular septal defects (VSD) are the most common congenital heart malformations. The membranous VSD accounts for 75-80% of all VSDs and arises from failure of proliferation/fusion of the conotruncal endocardial tissue with the muscular septum and AV cushions."
+      },
+      {
+        id: 6,
+        category: "Respiratory System",
+        question: "A premature infant is delivered at 21 weeks of gestation. Despite maximal ventilator support, the infant quickly dies from respiratory failure. Which characteristic of pulmonary development during this stage explains why extrauterine survival is impossible?",
+        options: [
+          "The secondary bronchi have failed to branch into segmental bronchi",
+          "Visceral pleura has failed to differentiate from somatic mesoderm",
+          "True alveolar capillary membranes and terminal sacs have not yet formed",
+          "The tracheoesophageal ridges have failed to fuse"
+        ],
+        correct: 2, // C
+        explanation: "Between weeks 16-25 (canalicular period), airways branch into respiratory bronchioles, and type II pneumocytes begin appearing at ~20 weeks. However, adequate terminal sacs and a thin alveolar-capillary barrier capable of gas exchange do not become sufficient until ~25 weeks' gestation."
+      },
+      {
+        id: 7,
+        category: "Pharyngeal Apparatus",
+        question: "A newborn exhibits micrognathia, cleft palate, low-set ears, hypocalcemia, and an interrupted aortic arch. Further workup confirms absent thymic shadow on chest radiograph. Aberrant migration of which embryonic cell type is primarily responsible?",
+        options: [
+          "Endodermal progenitor cells",
+          "Paraxial mesoderm cells",
+          "Intermediate mesoderm cells",
+          "Neural crest cells"
+        ],
+        correct: 3, // D
+        explanation: "DiGeorge syndrome (22q11.2 deletion) is characterized by defective neural crest cell migration into the 3rd and 4th pharyngeal pouches and aortic arches, leading to thymic aplasia, hypocalcemia (absent inferior/superior parathyroids), and conotruncal cardiac defects."
+      },
+      {
+        id: 8,
+        category: "Cardiovascular System",
+        question: "During adult cardiac catheterization, a cardiologist passes a probe into the right atrium. Smooth tissue forming the sinus venarum is inspected. Which embryological structure directly gives rise to this smooth-walled right atrial region?",
+        options: [
+          "Left horn of the sinus venosus",
+          "Right horn of the sinus venosus",
+          "Primitive atrium",
+          "Left common cardinal vein"
+        ],
+        correct: 1, // B
+        explanation: "The right sinus horn of the sinus venosus expands and becomes incorporated into the posterior wall of the right atrium to form the smooth sinus venarum. The primitive atrium forms the pectinate/trabeculated muscular portion and auricle (separated by the crista terminalis)."
+      },
+      {
+        id: 9,
+        category: "Central Nervous System",
+        question: "An infant born to an unimmunized mother is noted to have a single fused cerebral ventricle and a single central eye (cyclopia) associated with severe hypotelorism. This disorder of ventral midline development is most strongly associated with mutations in which signaling pathway?",
+        options: [
+          "Fibroblast growth factor 8 (FGF8)",
+          "Bone morphogenetic protein 4 (BMP4)",
+          "Sonic hedgehog (SHH)",
+          "Wingless-type (Wnt)"
+        ],
+        correct: 2, // C
+        explanation: "Holoprosencephaly is failure of the forebrain (prosencephalon) to divide into two cerebral hemispheres, resulting in a monoventricle and midline craniofacial anomalies. It is caused by mutations in Sonic Hedgehog (SHH) or teratogens like maternal alcohol use during weeks 3-4."
+      },
+      {
+        id: 10,
+        category: "Cardiovascular System",
+        question: "A full-term infant with severe cyanosis is diagnosed with Tetralogy of Fallot. The four hallmark anatomical defects observed in this infant are fundamentally caused by which embryologic mechanism?",
+        options: [
+          "Anterior displacement of the conotruncal septum",
+          "Excessive resorption of the septum primum",
+          "Failure of the left fourth aortic arch to develop",
+          "Persistence of the right anterior cardinal vein"
+        ],
+        correct: 0, // A
+        explanation: "Tetralogy of Fallot is caused by unequal division of the conus cordis resulting from anterior and superior displacement of the infundibular/conotruncal septum. This directly causes pulmonary stenosis, an overriding aorta, VSD, and right ventricular hypertrophy."
+      },
+      {
+        id: 11,
+        category: "Pharyngeal Apparatus",
+        question: "A 4-year-old child presents with a painless, round, fluctuating mass in the anterior midline of the neck just inferior to the hyoid bone. The mass moves upward when the child swallows and when protruding the tongue. This lesion represents a remnant of which embryonic duct?",
+        options: [
+          "Cervical sinus duct",
+          "Nasolacrimal duct",
+          "Vitelline duct",
+          "Thyroglossal duct"
+        ],
+        correct: 3, // D
+        explanation: "A thyroglossal duct cyst forms along the pathway of the descending thyroid primordium from the foramen cecum at the base of the tongue down through the neck. Because it is tethered to the base of the tongue, it uniquely moves superiorly upon swallowing or tongue protrusion."
+      },
+      {
+        id: 12,
+        category: "Respiratory System",
+        question: "A mother presents with a history of severe polyhydramnios. Immediately after birth, her infant chokes, coughs, and regurgitates froth during the first attempted feeding. An attempt to pass an orogastric tube meets resistance at 10 cm. Abdominal radiography reveals a prominent gastric air bubble. What is the underlying anomaly?",
+        options: [
+          "Isolated esophageal atresia without fistula",
+          "Esophageal atresia with distal tracheoesophageal fistula",
+          "Isolated tracheoesophageal fistula (H-type)",
+          "Congenital diaphragmatic hernia"
+        ],
+        correct: 1, // B
+        explanation: "Esophageal atresia with distal tracheoesophageal fistula (most common type, ~85-90%) results from abnormal branching and separation of the foregut by the tracheoesophageal septum. Inability to swallow amniotic fluid causes maternal polyhydramnios; air enters the distal GI tract from the trachea, producing a prominent gastric air bubble."
+      },
+      {
+        id: 13,
+        category: "Cardiovascular System",
+        question: "A newborn is noted to have a continuous 'machine-like' heart murmur over the left infraclavicular area. Administration of indomethacin is initiated to promote closure. From which of the following embryonic vascular arches is this affected structure derived?",
+        options: [
+          "Left fourth aortic arch",
+          "Right fourth aortic arch",
+          "Left sixth aortic arch",
+          "Left third aortic arch"
+        ],
+        correct: 2, // C
+        explanation: "The ductus arteriosus is derived from the left 6th aortic arch. It shunts desaturated blood from the pulmonary trunk directly to the descending aorta, bypassing high-resistance fetal lungs. Indomethacin (an NSAID) inhibits PGE synthesis to induce its closure postnatally."
+      },
+      {
+        id: 14,
+        category: "Central Nervous System",
+        question: "A 2-day-old infant fails to pass meconium and develops significant abdominal distension and bilious vomiting. Rectal biopsy demonstrates complete absence of parasympathetic ganglion cells in the submucosal and myenteric plexuses of the distal rectum. Which process failed during development?",
+        options: [
+          "Invagination of intermediate mesoderm",
+          "Migration of neural crest cells",
+          "Closure of the posterior neuropore",
+          "Apoptosis of the cloacal membrane"
+        ],
+        correct: 1, // B
+        explanation: "Hirschsprung disease (congenital megacolon) results from failure of neural crest cells to migrate into the wall of the distal colon and rectum during weeks 5-12, resulting in absent Auerbach (myenteric) and Meissner (submucosal) plexuses and distal functional obstruction."
+      },
+      {
+        id: 15,
+        category: "Pharyngeal Apparatus",
+        question: "A 3-day-old infant is evaluated for a congenital facial defect. Examination shows a unilateral cleft of the upper lip extending up to the left nostril. This specific defect is caused by failure of fusion between which of the following facial swellings?",
+        options: [
+          "Medial nasal prominence and lateral nasal prominence",
+          "Left and right mandibular prominences",
+          "Maxillary prominence and medial nasal prominence",
+          "Palatine shelves across the midline"
+        ],
+        correct: 2, // C
+        explanation: "Cleft lip results from failure of the maxillary prominence to fuse with the intermaxillary segment (formed by merged medial nasal prominences). In contrast, cleft palate occurs when the bilateral secondary palatine shelves fail to fuse with each other or with the primary palate."
+      },
+      {
+        id: 16,
+        category: "Central Nervous System",
+        question: "An MRI of the brain in a 35-year-old female complaining of progressive occipital headaches and ataxia reveals herniation of the cerebellar tonsils greater than 5 mm below the foramen magnum into the cervical canal. A syrinx in the cervical spinal cord is noted. What is the diagnosis?",
+        options: [
+          "Chiari I malformation",
+          "Chiari II malformation",
+          "Dandy-Walker malformation",
+          "Lissencephaly"
+        ],
+        correct: 0, // A
+        explanation: "Chiari I malformation is characterized by downward displacement of the cerebellar tonsils through the foramen magnum without brainstem descent. It is often asymptomatic until adulthood and is strongly associated with syringomyelia. Chiari II involves both vermis/tonsils and medulla herniation and presents in infancy with myelomeningocele."
+      },
+      {
+        id: 17,
+        category: "Respiratory System",
+        question: "During thoracic surgery on an adult patient, the surgeon examines the visceral pleura tightly adhering to the lung surface. From which embryonic layer does the visceral pleura directly arise?",
+        options: [
+          "Somatic lateral plate mesoderm",
+          "Intermediate mesoderm",
+          "Neural crest ectoderm",
+          "Splanchnic lateral plate mesoderm"
+        ],
+        correct: 3, // D
+        explanation: "Splanchnic (visceral) lateral plate mesoderm surrounding the lung buds forms the visceral pleura, bronchial cartilage, smooth muscle, and connective tissue. Somatic (somatopleuric) lateral plate mesoderm lining the inner thoracic wall forms the parietal pleura."
+      },
+      {
+        id: 18,
+        category: "Cardiovascular System",
+        question: "Following delivery, an infant begins crying and breathing room air. Which hemodynamic change immediately causes the functional closure of the foramen ovale?",
+        options: [
+          "Decreased left ventricular end-diastolic pressure",
+          "Increased left atrial pressure relative to right atrial pressure",
+          "Constriction of the ductus venosus by systemic prostaglandins",
+          "Increased pulmonary vascular resistance"
+        ],
+        correct: 1, // B
+        explanation: "At birth, lung expansion causes a drop in pulmonary vascular resistance and a marked increase in pulmonary venous return to the left atrium. The resulting increase in left atrial pressure relative to right atrial pressure presses the flexible septum primum against the rigid septum secundum, functionally sealing the foramen ovale."
+      },
+      {
+        id: 19,
+        category: "Pharyngeal Apparatus",
+        question: "During embryological dissection, an investigator examines the adult derivatives of the 3rd pharyngeal arch. Which of the following muscles is innervated by the cranial nerve associated with this arch?",
+        options: [
+          "Stapedius",
+          "Tensor veli palatini",
+          "Stylopharyngeus",
+          "Cricothyroid"
+        ],
+        correct: 2, // C
+        explanation: "The 3rd pharyngeal arch is innervated by the glossopharyngeal nerve (CN IX) and gives rise to only one muscle: the stylopharyngeus. The skeletal derivatives are the greater horn and lower part of the body of the hyoid bone."
+      },
+      {
+        id: 20,
+        category: "Central Nervous System",
+        question: "In the developing spinal cord, neuroepithelial proliferation along the dorsal and ventral aspects of the intermediate mantle layer establishes functional domains. Which signaling factor is primarily responsible for inducing the ventral motor basal plate?",
+        options: [
+          "Sonic hedgehog (SHH)",
+          "Bone morphogenetic proteins (BMPs)",
+          "Fibroblast growth factor 8 (FGF8)",
+          "Wnt signaling proteins"
+        ],
+        correct: 0, // A
+        explanation: "Sonic hedgehog (SHH) secreted by the underlying notochord and the floor plate induces the differentiation of the ventral basal plate into motor neurons. Bone morphogenetic proteins (BMPs) from the roof plate induce the dorsal alar plate into sensory neurons."
+      },
+      {
+        id: 21,
+        category: "Cardiovascular System",
+        question: "A routine ultrasound on an asymptomatic 30-year-old female reveals an ostium secundum atrial septal defect. Which embryological error is the primary etiology of this most common form of ASD?",
+        options: [
+          "Complete agenesis of the septum transversum",
+          "Premature closure of the foramen ovale",
+          "Failure of the left venous valve to regress",
+          "Excessive resorption of the septum primum"
+        ],
+        correct: 3, // D
+        explanation: "Ostium secundum ASD accounts for ~75% of all atrial septal defects. It is caused by excessive programmed cell death/resorption of the septum primum or incomplete development of the septum secundum, creating an abnormally wide opening between the atria."
+      },
+      {
+        id: 22,
+        category: "Respiratory System",
+        question: "A medical student is studying human lung development. By 33 to 35 days of embryonic gestation, how does the developmental branching pattern of the right lung bud differ from that of the left lung bud?",
+        options: [
+          "The right divides into 3 secondary bronchi; the left divides into 2",
+          "The right divides into 2 secondary bronchi; the left divides into 3",
+          "The right lung bud is more horizontal than the left",
+          "The right lung bud fails to penetrate the pericardioperitoneal canal"
+        ],
+        correct: 0, // A
+        explanation: "The right primary bronchus is larger and more vertical than the left. By day 35, the right divides into 3 secondary (lobar) bronchi (upper, middle, lower lobe primordia), whereas the left divides into only 2 secondary bronchi (upper and lower lobes)."
+      },
+      {
+        id: 23,
+        category: "Pharyngeal Apparatus",
+        question: "A child is born with Treacher Collins-like anomalies involving the auditory ossicles. The physician explains that the malleus and incus are derived from cartilage formed within which embryological arch?",
+        options: [
+          "Second pharyngeal arch",
+          "First pharyngeal arch",
+          "Third pharyngeal arch",
+          "Fourth pharyngeal arch"
+        ],
+        correct: 1, // B
+        explanation: "Meckel's cartilage in the first pharyngeal arch ossifies at its posterior end to form the malleus and incus, as well as the anterior ligament of the malleus and sphenomandibular ligament. Reichert's cartilage of the second arch forms the stapes, styloid process, and stylohyoid ligament."
+      },
+      {
+        id: 24,
+        category: "Cardiovascular System",
+        question: "A cyanotic newborn is evaluated in the NICU. Diagnostic workup confirms persistent truncus arteriosus. The clinician explains to the resident that this defect is virtually always accompanied by which associated cardiac anomaly?",
+        options: [
+          "Coarctation of the aorta",
+          "Total anomalous pulmonary venous return",
+          "Ventricular septal defect",
+          "Complete absence of the left atrium"
+        ],
+        correct: 2, // C
+        explanation: "Because the neural-crest-derived spiral aorticopulmonary septum also participates directly in the closure of the interventricular foramen (membranous septum), failure of the aorticopulmonary septum to form (persistent truncus arteriosus) is virtually always accompanied by a membranous VSD."
+      },
+      {
+        id: 25,
+        category: "Central Nervous System",
+        question: "During routine 18-week prenatal ultrasound, a fetus is found to have marked cystic enlargement of the posterior cranial fossa, complete absence of the cerebellar vermis, and enlarged lateral and third ventricles. What is the most likely diagnosis?",
+        options: [
+          "Chiari I malformation",
+          "Dandy-Walker malformation",
+          "Holoprosencephaly",
+          "Schizencephaly"
+        ],
+        correct: 1, // B
+        explanation: "Dandy-Walker malformation is characterized by agenesis of the cerebellar vermis, resulting in massive cystic expansion of the 4th ventricle into the enlarged posterior fossa, non-communicating hydrocephalus, and frequent association with spina bifida."
+      },
+      {
+        id: 26,
+        category: "Cardiovascular System",
+        question: "An adult liver donor undergoes a right hepatectomy. During the dissection near the porta hepatis, the ligamentum teres hepatis is identified and ligated. What embryonic vessel did this fibrous cord represent in utero?",
+        options: [
+          "Right umbilical vein",
+          "Ductus venosus",
+          "Left vitelline vein",
+          "Left umbilical vein"
+        ],
+        correct: 3, // D
+        explanation: "The left umbilical vein carries oxygenated blood from the placenta to the fetus in utero. After birth, it undergoes functional closure and obliterates to form the ligamentum teres hepatis (round ligament of the liver). The ductus venosus obliterates to form the ligamentum venosum."
+      },
+      {
+        id: 27,
+        category: "Pharyngeal Apparatus",
+        question: "A female infant presents with facial dysmorphisms including a smooth philtrum, exceptionally thin vermilion border of the upper lip, microcephaly, and small palpebral fissures. The mother consumed multiple alcoholic beverages per week during the first trimester. Which cellular process was compromised?",
+        options: [
+          "Fusion of the secondary palatine shelves",
+          "Neuronal and glial cell migration",
+          "Obliteration of the first pharyngeal cleft",
+          "Closure of the cranial neuropore"
+        ],
+        correct: 1, // B
+        explanation: "Fetal Alcohol Syndrome (FAS) is characterized by a smooth philtrum, thin upper lip, small palpebral fissures, microcephaly, and neurodevelopmental disability. Ethanol acts as a teratogen by impairing neural crest, neuronal, and glial cell migration and inducing widespread apoptosis."
+      },
+      {
+        id: 28,
+        category: "Cardiovascular System",
+        question: "During embryonic vascular remodeling in week 7, the vitelline arteries undergo selective regression and remodeling. Which adult vascular structures are directly derived from the embryonic vitelline arteries?",
+        options: [
+          "Common carotid and internal carotid arteries",
+          "Celiac, superior mesenteric, and inferior mesenteric arteries",
+          "Right subclavian and arch of aorta",
+          "Medial umbilical ligaments"
+        ],
+        correct: 1, // B
+        explanation: "The vitelline arteries supply the yolk sac and fuse to become the three arterial branches supplying the abdominal gut tube: the celiac artery (foregut), superior mesenteric artery (midgut), and inferior mesenteric artery (hindgut)."
+      },
+      {
+        id: 29,
+        category: "Respiratory System",
+        question: "In the neonatal intensive care unit, a preterm infant delivered at 31 weeks produces inadequate pulmonary surfactant, leading to neonatal respiratory distress syndrome (NRDS). From which germ layer are surfactant-producing Type II pneumocytes derived?",
+        options: [
+          "Foregut endoderm",
+          "Splanchnic mesoderm",
+          "Somatic mesoderm",
+          "Neural crest ectoderm"
+        ],
+        correct: 0, // A
+        explanation: "The epithelial lining of the entire respiratory tract, including the larynx, trachea, bronchi, and both Type I and Type II pneumocytes of the alveoli, is derived strictly from foregut endoderm. The connective tissues, cartilage, and vasculature arise from splanchnic lateral plate mesoderm."
+      },
+      {
+        id: 30,
+        category: "Pharyngeal Apparatus",
+        question: "Histological examination of a thyroid resection specimen shows calcitonin-secreting parafollicular cells (C cells). From which embryonic structure did these cells originate prior to migrating into the thyroid gland?",
+        options: [
+          "Floor of pharynx at the foramen cecum",
+          "Second pharyngeal cleft",
+          "Ultimobranchial body of fourth pouch",
+          "Lateral palatine shelf"
+        ],
+        correct: 2, // C
+        explanation: "The ultimobranchial body originates from the fourth pharyngeal pouch and incorporates into the developing thyroid lobes, where its neural-crest-derived cells differentiate into parafollicular C cells responsible for calcitonin secretion."
+      }
+    ];
+
+    // State Variables
+    let currentIdx = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let flagged = new Array(questions.length).fill(false);
+    let eliminatedOptions = Array.from({ length: questions.length }, () => new Set());
+    let eliminationMode = false;
+    let timerSeconds = 45 * 60;
+    let timerInterval = null;
+
+    // DOM Elements
+    const vignetteEl = document.getElementById('vignette-text');
+    const optionsContainer = document.getElementById('options-container');
+    const explanationBox = document.getElementById('explanation-box');
+    const explanationText = document.getElementById('explanation-text');
+    const resultBadge = document.getElementById('result-badge');
+    const currentQPill = document.getElementById('current-q-pill');
+    const qCategory = document.getElementById('q-category');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const revealBtn = document.getElementById('reveal-btn');
+    const bookmarkBtn = document.getElementById('bookmark-btn');
+    const bookmarkIcon = document.getElementById('bookmark-icon');
+    const strikeToggleBtn = document.getElementById('strike-toggle-btn');
+    const questionGrid = document.getElementById('question-grid');
+    const answeredCountEl = document.getElementById('answered-count');
+    const accuracyDisplayEl = document.getElementById('accuracy-display');
+    const progressBar = document.getElementById('progress-bar');
+    const flaggedCountEl = document.getElementById('flagged-count');
+    const endExamBtn = document.getElementById('end-exam-btn');
+    const scoreModal = document.getElementById('score-modal');
+
+    // Timer Function
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        if (timerSeconds <= 0) {
+          clearInterval(timerInterval);
+          finishExam();
+          return;
+        }
+        timerSeconds--;
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        document.getElementById('time-left').textContent = 
+          `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    // Build Question Grid
+    function initGrid() {
+      questionGrid.innerHTML = '';
+      questions.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.id = `grid-btn-${idx}`;
+        btn.className = 'h-9 text-xs font-semibold rounded-lg border flex items-center justify-center transition relative';
+        btn.textContent = idx + 1;
+        btn.addEventListener('click', () => {
+          currentIdx = idx;
+          loadQuestion();
+        });
+        questionGrid.appendChild(btn);
+      });
+      updateGridUI();
+    }
+
+    function updateGridUI() {
+      questions.forEach((_, idx) => {
+        const btn = document.getElementById(`grid-btn-${idx}`);
+        if (!btn) return;
+        
+        const isCurrent = idx === currentIdx;
+        const ans = userAnswers[idx];
+        const isMarked = flagged[idx];
+
+        btn.className = 'h-9 text-xs font-semibold rounded-lg border flex items-center justify-center transition relative ';
+
+        if (isCurrent) {
+          btn.className += 'ring-2 ring-blue-500 border-blue-600 bg-blue-50 text-blue-900 font-bold';
+        } else if (ans !== null) {
+          if (ans === questions[idx].correct) {
+            btn.className += 'bg-emerald-500 border-emerald-600 text-white';
+          } else {
+            btn.className += 'bg-rose-500 border-rose-600 text-white';
+          }
+        } else {
+          btn.className += 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100';
+        }
+
+        if (isMarked) {
+          const dot = document.createElement('span');
+          dot.className = 'absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-white';
+          btn.appendChild(dot);
+        }
+      });
+
+      const totalAnswered = userAnswers.filter(a => a !== null).length;
+      answeredCountEl.textContent = `${totalAnswered}/${questions.length}`;
+      progressBar.style.width = `${(totalAnswered / questions.length) * 100}%`;
+
+      const correctCount = userAnswers.reduce((acc, ans, i) => acc + (ans === questions[i].correct ? 1 : 0), 0);
+      if (totalAnswered > 0) {
+        const acc = Math.round((correctCount / totalAnswered) * 100);
+        accuracyDisplayEl.textContent = `${acc}%`;
+      } else {
+        accuracyDisplayEl.textContent = '--%';
+      }
+
+      const totalFlagged = flagged.filter(Boolean).length;
+      flaggedCountEl.textContent = totalFlagged;
+    }
+
+    // Load Active Question
+    function loadQuestion() {
+      const q = questions[currentIdx];
+      currentQPill.textContent = `Question ${currentIdx + 1} of ${questions.length}`;
+      qCategory.textContent = q.category;
+      vignetteEl.textContent = q.question;
+
+      if (flagged[currentIdx]) {
+        bookmarkIcon.className = 'fas fa-flag text-base text-amber-500';
+      } else {
+        bookmarkIcon.className = 'far fa-flag text-base text-slate-400';
+      }
+
+      prevBtn.disabled = currentIdx === 0;
+      nextBtn.innerHTML = currentIdx === questions.length - 1 ? 'Finish Exam <i class="fas fa-check ml-1.5"></i>' : 'Next <i class="fas fa-chevron-right ml-1.5"></i>';
+
+      optionsContainer.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      const userSelected = userAnswers[currentIdx];
+      const hasAnswered = userSelected !== null;
+
+      q.options.forEach((optText, optIdx) => {
+        const optDiv = document.createElement('div');
+        const isStruck = eliminatedOptions[currentIdx].has(optIdx);
+
+        optDiv.className = `p-4 rounded-xl border text-sm font-medium transition cursor-pointer flex items-center justify-between group `;
+
+        if (hasAnswered) {
+          if (optIdx === q.correct) {
+            optDiv.className += 'bg-emerald-50 border-emerald-500 text-emerald-950 font-semibold';
+          } else if (optIdx === userSelected) {
+            optDiv.className += 'bg-rose-50 border-rose-500 text-rose-950';
+          } else {
+            optDiv.className += 'bg-slate-50 border-slate-200 text-slate-400 opacity-60';
+          }
+        } else {
+          if (isStruck) {
+            optDiv.className += 'bg-slate-100 border-slate-200 text-slate-400 line-through opacity-50';
+          } else {
+            optDiv.className += 'bg-white border-slate-200 hover:border-blue-400 hover:bg-blue-50/40 text-slate-800';
+          }
+        }
+
+        optDiv.innerHTML = `
+          <div class="flex items-center space-x-3 w-full">
+            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+              hasAnswered && optIdx === q.correct 
+                ? 'bg-emerald-600 text-white' 
+                : hasAnswered && optIdx === userSelected 
+                ? 'bg-rose-600 text-white' 
+                : 'bg-slate-100 text-slate-600 group-hover:bg-blue-200'
+            }">${letters[optIdx]}</span>
+            <span class="flex-1">${optText}</span>
+          </div>
+          ${hasAnswered && optIdx === q.correct ? '<i class="fas fa-check-circle text-emerald-600 ml-2"></i>' : ''}
+          ${hasAnswered && optIdx === userSelected && optIdx !== q.correct ? '<i class="fas fa-times-circle text-rose-600 ml-2"></i>' : ''}
+        `;
+
+        optDiv.addEventListener('click', () => {
+          if (eliminationMode && !hasAnswered) {
+            if (eliminatedOptions[currentIdx].has(optIdx)) {
+              eliminatedOptions[currentIdx].delete(optIdx);
+            } else {
+              eliminatedOptions[currentIdx].add(optIdx);
+            }
+            loadQuestion();
+            return;
+          }
+
+          if (!hasAnswered) {
+            userAnswers[currentIdx] = optIdx;
+            loadQuestion();
+            updateGridUI();
+            showExplanation();
+          }
+        });
+
+        optionsContainer.appendChild(optDiv);
+      });
+
+      if (hasAnswered) {
+        showExplanation();
+      } else {
+        explanationBox.classList.add('hidden');
+      }
+
+      updateGridUI();
+    }
+
+    function showExplanation() {
+      const q = questions[currentIdx];
+      const userSelected = userAnswers[currentIdx];
+      explanationBox.classList.remove('hidden');
+
+      if (userSelected !== null) {
+        const isCorrect = userSelected === q.correct;
+        resultBadge.textContent = isCorrect ? 'Correct' : 'Incorrect';
+        resultBadge.className = isCorrect ? 'bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider' : 'bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider';
+      } else {
+        resultBadge.textContent = 'High-Yield Explanation';
+        resultBadge.className = 'bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded text-xs font-bold uppercase tracking-wider';
+      }
+
+      explanationText.innerHTML = `
+        <p class="font-semibold text-slate-900 mb-1">Correct Answer: (${['A','B','C','D'][q.correct]}) ${q.options[q.correct]}</p>
+        <p class="text-slate-700">${q.explanation}</p>
+      `;
+    }
+
+    function finishExam() {
+      clearInterval(timerInterval);
+      const correctTotal = userAnswers.reduce((acc, ans, i) => acc + (ans === questions[i].correct ? 1 : 0), 0);
+      const scorePct = Math.round((correctTotal / questions.length) * 100);
+
+      document.getElementById('modal-score').textContent = `${correctTotal}/${questions.length}`;
+      document.getElementById('modal-pct').textContent = `${scorePct}%`;
+
+      const statusEl = document.getElementById('modal-status');
+      if (scorePct >= 70) {
+        statusEl.textContent = 'PASS';
+        statusEl.className = 'text-base font-bold mt-1 text-emerald-600 block';
+      } else {
+        statusEl.textContent = 'BELOW PASS';
+        statusEl.className = 'text-base font-bold mt-1 text-rose-600 block';
+      }
+
+      const categories = [...new Set(questions.map(q => q.category))];
+      let breakdownHtml = '<p class="font-bold text-slate-800 border-b pb-1 mb-2">Category Performance Breakdown:</p>';
+      
+      categories.forEach(cat => {
+        const catQs = questions.filter(q => q.category === cat);
+        const catCorrect = catQs.reduce((acc, q) => {
+          const idx = questions.indexOf(q);
+          return acc + (userAnswers[idx] === q.correct ? 1 : 0);
+        }, 0);
+        const pct = Math.round((catCorrect / catQs.length) * 100);
+        breakdownHtml += `
+          <div class="flex justify-between items-center py-0.5">
+            <span>${cat} (${catCorrect}/${catQs.length})</span>
+            <span class="font-semibold ${pct >= 70 ? 'text-emerald-600' : 'text-amber-600'}">${pct}%</span>
+          </div>
+        `;
+      });
+
+      document.getElementById('modal-breakdown').innerHTML = breakdownHtml;
+      scoreModal.classList.remove('hidden');
+    }
+
+    // Event Listeners
+    prevBtn.addEventListener('click', () => {
+      if (currentIdx > 0) {
+        currentIdx--;
+        loadQuestion();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentIdx < questions.length - 1) {
+        currentIdx++;
+        loadQuestion();
+      } else {
+        finishExam();
+      }
+    });
+
+    revealBtn.addEventListener('click', () => {
+      showExplanation();
+    });
+
+    bookmarkBtn.addEventListener('click', () => {
+      flagged[currentIdx] = !flagged[currentIdx];
+      loadQuestion();
+    });
+
+    strikeToggleBtn.addEventListener('click', () => {
+      eliminationMode = !eliminationMode;
+      if (eliminationMode) {
+        strikeToggleBtn.className = 'p-2 rounded bg-amber-100 text-amber-800 text-xs font-semibold px-2 border border-amber-300';
+      } else {
+        strikeToggleBtn.className = 'p-2 rounded hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition text-xs font-semibold px-2 border border-slate-200';
+      }
+    });
+
+    endExamBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to finish the exam session?')) {
+        finishExam();
+      }
+    });
+
+    document.getElementById('modal-review-btn').addEventListener('click', () => {
+      scoreModal.classList.add('hidden');
+    });
+
+    document.getElementById('modal-restart-btn').addEventListener('click', () => {
+      resetExam();
+      scoreModal.classList.add('hidden');
+    });
+
+    document.getElementById('reset-exam-btn').addEventListener('click', () => {
+      if (confirm('Reset all answers and flags?')) {
+        resetExam();
+      }
+    });
+
+    function resetExam() {
+      userAnswers = new Array(questions.length).fill(null);
+      flagged = new Array(questions.length).fill(false);
+      eliminatedOptions = Array.from({ length: questions.length }, () => new Set());
+      currentIdx = 0;
+      timerSeconds = 45 * 60;
+      clearInterval(timerInterval);
+      startTimer();
+      loadQuestion();
+      updateGridUI();
+    }
+
+    // Keyboard navigation
+    window.addEventListener('keydown', (e) => {
+      if (scoreModal.classList.contains('hidden')) {
+        if (e.key === 'ArrowLeft' && currentIdx > 0) {
+          currentIdx--;
+          loadQuestion();
+        } else if (e.key === 'ArrowRight' && currentIdx < questions.length - 1) {
+          currentIdx++;
+          loadQuestion();
+        }
+      }
+    });
+
+    // Start App
+    initGrid();
+    loadQuestion();
+    startTimer();
+  </script>
+</body>
+</html>
